@@ -1,0 +1,16 @@
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Local scratch work
+*.local.md
+scratch/
+.tmp/
+
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
