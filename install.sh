@@ -14,7 +14,7 @@ export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:${PA
 root="$(cd "$(dirname "$0")" && pwd)"
 skills="$root/skills"
 notes="$root/notes"
-expected_path="${HOME}/worknotes"
+expected_path="${HOME}/personal-assistant-worknotes"
 expected=(pa-context pa-meetings pa-direct-reports pa-manager pa-stakeholders pa-sources pa-promotion-case pa-performance-concern pa-feedback pa-portfolio pa-delivery pa-scrum pa-users pa-coaching-span pa-dates pa-integrity pa-jira)
 link=0
 lock=0
@@ -54,6 +54,11 @@ need ls
 need uname
 need stat
 echo "deps: bash grep python3 dirname ok"
+if command -v rg >/dev/null 2>&1; then
+  echo "optional: rg $(rg --version | head -n 1)"
+else
+  echo "optional: rg not found; grep fallback is active"
+fi
 echo "bash: $BASH_VERSION"
 
 if [[ ! -x "$0" && ! -x "$root/install.sh" ]]; then
@@ -64,7 +69,7 @@ if [[ "$root" == "$expected_path" ]]; then
   echo "path: expected ($expected_path)"
 else
   echo "path: $root"
-  echo "      expected $expected_path if this is the personal Mac vault"
+  echo "      expected $expected_path for the standard local checkout"
 fi
 
 os="$(uname -s)"
@@ -210,9 +215,9 @@ if [[ -d "$root/.git" ]]; then
   echo "git: this folder is a repository."
   remotes="$(git -C "$root" remote -v 2>/dev/null || true)"
   if [[ -z "$remotes" ]]; then
-    echo "git remotes: none. That is what we want."
+    echo "git remotes: none. Add the GitHub remote before pushing."
   else
-    echo "git remotes: present. Remove them. This vault should not have a remote."
+    echo "git remotes: present. Review the remote before pushing."
     echo "$remotes"
   fi
 else
@@ -226,7 +231,7 @@ echo "  Installed: yes (skills and indexes present)"
 echo "  Notes locked: $([[ "$mode" == "700" || "$mode" == "600" ]] && echo yes || echo no)"
 echo "  Skills verified: yes"
 echo "  Finder check: manual"
-echo "  See CHECKLIST.md for configuration and roster."
+  echo "  See CONTRIBUTING.md before adding notes."
 if [[ "$first" -eq 1 ]]; then
   echo "  Next: open this folder in its own VS Code window and run CONFIGURE.md"
 fi

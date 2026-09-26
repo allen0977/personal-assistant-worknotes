@@ -16,10 +16,14 @@ Use this repository to capture reusable context without storing secrets, custome
 ## Quick start
 
 1. Review `PRIVACY.md` and `SHARE.md`.
-2. Copy `templates/worknote.md` into `notes/`.
-3. Replace every placeholder with general, non-identifying language.
-4. Run the pre-commit checklist in `CONTRIBUTING.md`.
-5. Commit only notes that are safe to share publicly.
+2. Install the recommended search tool: `brew install ripgrep`.
+3. Copy `templates/worknote.md` into `notes/`.
+4. Replace every placeholder with general, non-identifying language.
+5. Run the pre-commit checklist in `CONTRIBUTING.md`.
+6. Commit only notes that are safe to share publicly.
+
+`ripgrep` (`rg`) is recommended for fast repository searches. The installer
+and checks fall back to standard `grep` when `rg` is unavailable.
 
 ## Sanitization standard
 

@@ -20,6 +20,14 @@ Open this folder in its own VS Code window when working with local notes.
 bash ./install.sh --check
 ```
 
+For fast searches across skills and notes, install `ripgrep` with Homebrew:
+
+```bash
+brew install ripgrep
+```
+
+The project remains usable without it; `grep` is used as the fallback.
+
 `install.sh` may not be executable in the zip. That is expected. Use `bash ./install.sh`. Optional: `chmod +x install.sh`.
 
 `--check` changes nothing. `--lock-notes` locks `notes/` only. `--first-run` is check plus lock. `--link-skills` is only if your client scans `~/.copilot/skills`.

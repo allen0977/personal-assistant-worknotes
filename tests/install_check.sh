@@ -10,6 +10,16 @@ fail=0
 say() { echo "$*"; }
 bad() { echo "FAIL  $*"; fail=1; }
 
+contains() {
+  local pattern="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -q "$pattern" "$file"
+  else
+    grep -q "$pattern" "$file"
+  fi
+}
+
 before="$(stat -c "%a" "$notes" 2>/dev/null || stat -f "%Lp" "$notes")"
 bash "$root/install.sh" --check >/tmp/worknotes-check.out
 after="$(stat -c "%a" "$notes" 2>/dev/null || stat -f "%Lp" "$notes")"
@@ -18,7 +28,7 @@ if [[ "$before" == "$after" ]]; then
 else
   bad "--check changed notes mode $before -> $after"
 fi
-if ! grep -q "No files or permissions changed" /tmp/worknotes-check.out; then
+if ! contains "No files or permissions changed" /tmp/worknotes-check.out; then
   bad "--check did not report that it changed nothing"
 else
   say "ok  --check reports no changes"
@@ -34,7 +44,7 @@ else
   bad "unknown flag exited $code, expected 2"
 fi
 
-if grep -q "pa-feedback" "$root/install.sh"; then
+if contains "pa-feedback" "$root/install.sh"; then
   say "ok  installer expects pa-feedback"
 else
   bad "installer skill list missing pa-feedback"
