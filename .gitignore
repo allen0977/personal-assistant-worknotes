@@ -1,16 +1,19 @@
-# OS and editor files
 .DS_Store
-.vscode/
-.idea/
-
-# Local scratch work
-*.local.md
-scratch/
-.tmp/
-
-# Secrets and environment files
+Thumbs.db
+*.tmp
+*.swp
 .env
 .env.*
-!.env.example
 *.pem
 *.key
+credentials.json
+.mcp.json
+
+# Private vault data. Deny by default.
+personal/
+
+notes/**
+!notes/.gitkeep
+!notes/README.md
+!notes/MAP.md
+!notes/INDEX.md
