@@ -1,6 +1,6 @@
 # Privacy
 
-These notes include promotion cases and a possible PIP. Treat the whole `notes/` tree as personnel data.
+These notes include promotion cases and a possible PIP. Treat a filled `notes/` tree as personnel data. The public starter is a different contract: skills and empty templates only. See [CONTRACT.md](CONTRACT.md).
 
 Privacy is about location and access. It is not a reason to store less. Keep the catalog complete inside `notes/`. See `notes/MAP.md`.
 
@@ -20,7 +20,7 @@ Skills live in `skills/`. Data lives in `notes/`. Discovery settings must point 
 
 1. Keep the folder at `~/worknotes`. Not Documents, Desktop, Downloads, iCloud Drive, a repo clone, or a network drive.
 2. Open it in its own VS Code window with `code ~/worknotes`. Never add this folder to a team-repo workspace. Never `code --add` it into another window.
-3. Do not create a git remote. A local repo with no remote is optional. `git remote -v` must stay empty.
+3. Do not add a remote to a laptop vault that holds names. The public starter may have a remote only while notes stay empty. See CONTRACT.md.
 4. Confirm Copilot Chat in a **team** window cannot list files under `~/worknotes`. If it can, this folder is still attached to that workspace. Remove it.
 5. Lock the notes tree to your macOS user:
 
@@ -36,7 +36,7 @@ That stops other accounts on the same Mac from reading the notes. It does not st
 
 ## Copilot-specific risk
 
-Enterprise Copilot can retain **prompts**. A paste of a PIP email into chat may be logged even when the file never leaves disk. Keep verbatim pastes short. Do not paste medical detail. Check your company’s Copilot data policy before you treat chat as private.
+Enterprise Copilot can retain **prompts**. A paste of a PIP email into chat may be logged even when the file never leaves disk. Keep verbatim pastes short. Do not paste medical detail. Check your company's Copilot data policy before you treat chat as private.
 
 Content exclusion in a GitHub org does **not** protect this folder. Agent mode does not reliably honor those exclusions. Physical separation of the workspace is the control that works.
 
@@ -46,11 +46,11 @@ Content exclusion in a GitHub org does **not** protect this folder. Agent mode d
 
 - Write vault content into any other folder, repo, PR, commit, ticket, or message
 - Suggest copying notes to Slack, email, or SharePoint
-- Add a git remote or push
+- Add a git remote to a vault that holds names, or push personnel notes
 - Attach this folder to another workspace
 
 If a request would do any of those, it must stop and say so.
 
 ## What to do if it leaked
 
-If a note landed in a team repo, a gist, chat, or a shared drive: copy the text out, delete it from the shared place, rotate anything sensitive that was in the paste, and tell HR if a personnel file was exposed. Then find how the folder got attached and remove that path.
+If a note landed in a team repo, a gist, chat, or a shared drive: copy the text out, delete it from the shared place, rotate anything sensitive that was in the paste, and tell HR if a personnel file was exposed. Then find how the folder got attached and remove that path. See DATA.md for the incident steps.
