@@ -1,6 +1,6 @@
 # Security
 
-This folder is a local manager notebook plus Agent Skills. It is not a certified product, not an HR system of record, and not a substitute for company legal or security review. Use it as a private workspace. Who can see the folder is [PRIVACY.md](PRIVACY.md). This file is what the design does and does not claim.
+This folder is a local manager notebook plus Agent Skills. It is not a certified product, not an HR system of record, and not a substitute for company legal or security review. Who can see the folder is [PRIVACY.md](PRIVACY.md). Which copy you are in is [CONTRACT.md](CONTRACT.md). Classification, deletion, and incidents are [DATA.md](DATA.md).
 
 ## What this follows
 
@@ -8,7 +8,7 @@ This folder is a local manager notebook plus Agent Skills. It is not a certified
 - Personal skills prefixed `pa-` so they do not override team skills that share a name.
 - Procedures in `skills/`. Data in `notes/`. Skills are safe to copy. Filled notes are not.
 - No secrets in skills. Install scripts only symlink skill folders. They do not copy notes and do not touch a team repo.
-- Git settings in this workspace disable autofetch, force-push, and parent-folder repo discovery. Do not add a remote.
+- The public starter may have a remote. A laptop vault with names must not. The installer fails if both a remote and private notes are present. See CONTRACT.md.
 - Notes default to local disk. Not iCloud, not a shared drive, not the team repository.
 
 ## What you must still do
@@ -16,7 +16,7 @@ This folder is a local manager notebook plus Agent Skills. It is not a certified
 1. Keep the folder on the machine, outside Documents, Desktop, and cloud-synced home folders.
 2. `chmod -R go-rwx notes` on macOS or Linux after you put names in notes.
 3. FileVault or full-disk encryption on the laptop. This vault does not encrypt files itself.
-4. No git remote. If you use local git, `git remote -v` stays empty.
+4. No git remote on a laptop vault that holds names. The public starter is the exception, and only while notes stay empty. See CONTRACT.md.
 5. Do not publish a filled `notes/` tree. Ship skills plus empty templates only. See SHARE.md.
 6. Treat Copilot and any MCP (Jira, AWS) as company-logged. A paste can leave the laptop even when the file does not.
 7. Redact tokens, passwords, keys, and customer secrets before a note is written. The skills say this. Check the file.
