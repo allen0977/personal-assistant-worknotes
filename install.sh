@@ -14,7 +14,7 @@ export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:${PA
 root="$(cd "$(dirname "$0")" && pwd)"
 skills="$root/skills"
 notes="$root/notes"
-expected_path="${HOME}/personal-assistant-worknotes"
+expected_path="${HOME}/worknotes"
 expected=(pa-context pa-meetings pa-direct-reports pa-manager pa-stakeholders pa-sources pa-promotion-case pa-performance-concern pa-feedback pa-portfolio pa-delivery pa-scrum pa-users pa-coaching-span pa-dates pa-integrity pa-jira)
 link=0
 lock=0
@@ -54,11 +54,6 @@ need ls
 need uname
 need stat
 echo "deps: bash grep python3 dirname ok"
-if command -v rg >/dev/null 2>&1; then
-  echo "optional: rg $(rg --version | head -n 1)"
-else
-  echo "optional: rg not found; grep fallback is active"
-fi
 echo "bash: $BASH_VERSION"
 
 if [[ ! -x "$0" && ! -x "$root/install.sh" ]]; then
@@ -69,7 +64,7 @@ if [[ "$root" == "$expected_path" ]]; then
   echo "path: expected ($expected_path)"
 else
   echo "path: $root"
-  echo "      expected $expected_path for the standard local checkout"
+  echo "      expected $expected_path if this is the personal Mac vault"
 fi
 
 os="$(uname -s)"
@@ -211,18 +206,38 @@ else:
 PY
 
 echo
+private_on_disk=0
+if find "$root/personal" "$notes/people" "$notes/meetings" "$notes/sources" "$notes/performance" -type f -name '*.md' 2>/dev/null | grep -q .; then
+  private_on_disk=1
+fi
+if find "$notes/promotions" -mindepth 2 -type f -name '*.md' 2>/dev/null | grep -q .; then
+  private_on_disk=1
+fi
+
 if [[ -d "$root/.git" ]]; then
   echo "git: this folder is a repository."
   remotes="$(git -C "$root" remote -v 2>/dev/null || true)"
-  if [[ -z "$remotes" ]]; then
-    echo "git remotes: none. Add the GitHub remote before pushing."
+  tracked="$(git -C "$root" ls-files 'personal' 'personal/*' 'notes/people' 'notes/people/*' 'notes/meetings' 'notes/meetings/*' 'notes/sources' 'notes/sources/*' 'notes/drafts' 'notes/drafts/*' 'notes/promotions' 'notes/promotions/*' 'notes/performance' 'notes/performance/*' 2>/dev/null || true)"
+  tracked="$(printf '%s\n' "$tracked" | grep -v -E 'notes/(promotions|performance)/INDEX.md$' || true)"
+  if [[ -n "$tracked" ]]; then
+    echo "git fail: private note paths are tracked. Untrack them. Do not push."
+    printf '%s\n' "$tracked"
+    exit 1
+  fi
+  if [[ -n "$remotes" && "$private_on_disk" -eq 1 ]]; then
+    echo "git fail: private notes are on disk and a remote exists."
+    echo "      Remove the remote from this vault, or keep filled notes out of this clone."
+    echo "      See CONTRACT.md."
+    printf '%s\n' "$remotes"
+    exit 1
+  fi
+  if [[ -n "$remotes" ]]; then
+    echo "git: remote present. Allowed only for the public starter with no private notes."
   else
-    echo "git remotes: present. Review the remote before pushing."
-    echo "$remotes"
+    echo "git remotes: none."
   fi
 else
-  echo "git: not a repository. That is fine."
-  echo "      The check is not a failed remote. There is no repo, so there is no remote list."
+  echo "git: not a repository. That is fine for a laptop vault."
 fi
 
 echo
@@ -231,7 +246,7 @@ echo "  Installed: yes (skills and indexes present)"
 echo "  Notes locked: $([[ "$mode" == "700" || "$mode" == "600" ]] && echo yes || echo no)"
 echo "  Skills verified: yes"
 echo "  Finder check: manual"
-  echo "  See CONTRIBUTING.md before adding notes."
+echo "  See CHECKLIST.md for configuration and roster."
 if [[ "$first" -eq 1 ]]; then
   echo "  Next: open this folder in its own VS Code window and run CONFIGURE.md"
 fi
