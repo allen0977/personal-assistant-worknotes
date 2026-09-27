@@ -19,9 +19,10 @@ expected=(pa-context pa-meetings pa-direct-reports pa-manager pa-stakeholders pa
 link=0
 lock=0
 first=0
+harden=0
 
 usage() {
-  echo "Usage: bash $0 [--check] [--lock-notes] [--link-skills] [--first-run]"
+  echo "Usage: bash $0 [--check] [--lock-notes] [--link-skills] [--first-run] [--harden-git]"
 }
 
 for arg in "$@"; do
@@ -30,6 +31,7 @@ for arg in "$@"; do
     --link|--link-skills) link=1 ;;
     --lock-notes) lock=1 ;;
     --first-run) lock=1; first=1 ;;
+    --harden-git) harden=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $arg" >&2; usage >&2; exit 2 ;;
   esac
@@ -216,7 +218,7 @@ fi
 
 if [[ -d "$root/.git" ]]; then
   echo "git: this folder is a repository."
-  remotes="$(git -C "$root" remote -v 2>/dev/null || true)"
+ remotes="$(git -C "$root" remote -v 2>/dev/null || true)"
   tracked="$(git -C "$root" ls-files 'personal' 'personal/*' 'notes/people' 'notes/people/*' 'notes/meetings' 'notes/meetings/*' 'notes/sources' 'notes/sources/*' 'notes/drafts' 'notes/drafts/*' 'notes/promotions' 'notes/promotions/*' 'notes/performance' 'notes/performance/*' 2>/dev/null || true)"
   tracked="$(printf '%s\n' "$tracked" | grep -v -E 'notes/(promotions|performance)/INDEX.md$' || true)"
   if [[ -n "$tracked" ]]; then
@@ -263,23 +265,50 @@ if [[ "$lock" -eq 1 ]]; then
   echo "lock-notes: done."
 fi
 
+if [[ "$harden" -eq 1 ]]; then
+  if [[ ! -d "$root/.git" ]]; then
+    echo "harden-git: no .git directory. Nothing written."
+  else
+    git -C "$root" config --local pull.ff only
+    git -C "$root" config --local push.default simple
+    echo "harden-git: set pull.ff=only and push.default=simple in this repo only."
+    echo "            Autofetch is a VS Code setting, not git config. This does not remove remotes."
+  fi
+fi
+
 if [[ "$link" -eq 1 ]]; then
   dest="${HOME}/.copilot/skills"
   mkdir -p "$dest"
+  link_fail=0
   for name in "${expected[@]}"; do
     source="$skills/$name"
     link_path="$dest/$name"
+    if [[ -L "$link_path" ]]; then
+      current="$(readlink "$link_path")"
+      if [[ "$current" == "$source" ]]; then
+        echo "ok    $link_path already points here"
+      else
+        echo "fail  $link_path points to $current, expected $source" >&2
+        link_fail=1
+      fi
+      continue
+    fi
     if [[ -e "$link_path" ]]; then
-      echo "skip  $link_path already exists"
+      echo "fail  $link_path exists and is not a symlink. Will not overwrite." >&2
+      link_fail=1
       continue
     fi
     ln -s "$source" "$link_path"
     echo "link  $link_path -> $source"
   done
+  if [[ "$link_fail" -eq 1 ]]; then
+    echo "link-skills: existing path does not point at this project. Remove it and rerun." >&2
+    exit 1
+  fi
   echo "Symlinks point at this folder. Edit skills here, not in ~/.copilot/skills."
 else
   echo
-  if [[ "$lock" -eq 0 ]]; then
-    echo "No files or permissions changed. Modes: --check --lock-notes --link-skills --first-run"
+  if [[ "$lock" -eq 0 && "$harden" -eq 0 ]]; then
+    echo "No files or permissions changed. Modes: --check --lock-notes --link-skills --first-run --harden-git"
   fi
 fi
