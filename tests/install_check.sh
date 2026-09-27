@@ -56,7 +56,7 @@ else
 fi
 
 fix="$tmpdir/vault"
-mkdir -p "$fix/notes" "$fix/skills/pa-context"
+mkdir -p "$fix/notes"
 cp "$root/install.sh" "$fix/install.sh"
 while read -r name; do
   mkdir -p "$fix/skills/$name"
@@ -108,7 +108,7 @@ set +e
 bash "$pub/tests/publish_check.sh" >"$tmpdir/pubfail.out" 2>&1
 pubcode=$?
 set -e
-if [[ "$pubcode" -ne 0 ]] && grep -q "private paths are tracked" "$tmpdir/pubfail.out"; then
+if [[ "$pubcode" -ne 0 ]] && grep -q "allowlist" "$tmpdir/pubfail.out"; then
   say "ok  publish_check fails when notes/team.md is tracked"
 else
   bad "publish_check did not fail a tracked team.md"
