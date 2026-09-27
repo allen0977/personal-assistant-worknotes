@@ -15,7 +15,7 @@ A green installer is not a finished vault. Keep these four states separate.
 - [ ] Installer did not report a cloud-synced path
 - [ ] Finder Get Info says On My Mac (manual)
 - [ ] `notes` mode is private to you, or you chose not to lock it
-- [ ] Git is not a repository, or it is a repository with no remotes
+- [ ] Laptop vault: no git remote. Public starter: a remote is allowed only while notes stay empty. See CONTRACT.md.
 
 The installer reports these. A plain `./install.sh` changes nothing. Lock only if you want to:
 

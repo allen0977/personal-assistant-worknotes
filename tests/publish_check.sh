@@ -8,7 +8,6 @@ fail=0
 say() { echo "$*"; }
 bad() { echo "FAIL  $*"; fail=1; }
 
-# Literal match. Do not pass notes/** to basic grep; macOS treats * as a regex operator.
 need_ignore() {
   if grep -F -q "$1" "$root/.gitignore"; then
     say "ok  gitignore has $1"
@@ -25,24 +24,35 @@ need_ignore '!notes/README.md'
 need_ignore '!notes/.gitkeep'
 
 if [[ -d "$root/.git" ]]; then
-  tracked="$(git -C "$root" ls-files \
-    'personal' 'personal/*' \
-    'notes/people' 'notes/people/*' \
-    'notes/meetings' 'notes/meetings/*' \
-    'notes/sources' 'notes/sources/*' \
-    'notes/drafts' 'notes/drafts/*' \
-    'notes/promotions' 'notes/promotions/*' \
-    'notes/performance' 'notes/performance/*' \
-    'notes/dates.md' 'notes/calendar.md' 'notes/team.md' \
-    'notes/focus.md' 'notes/quotes.md' 'notes/actions.md' \
-    'notes/inbox.md' \
-    2>/dev/null || true)"
-  tracked="$(printf '%s\n' "$tracked" | grep -v -E 'notes/(promotions|performance)/INDEX.md$' || true)"
-  if [[ -n "$tracked" ]]; then
-    bad "private paths are tracked"
-    printf '%s\n' "$tracked"
+  allowed='notes/.gitkeep
+notes/README.md
+notes/MAP.md
+notes/INDEX.md'
+  tracked="$(git -C "$root" ls-files 'notes' 'notes/*' 'notes/**' 'personal' 'personal/*' 2>/dev/null || true)"
+  extra=""
+  while IFS= read -r path; do
+    [[ -z "$path" ]] && continue
+    case "$path" in
+      personal|personal/*)
+        extra="$extra$path"$'\n'
+        ;;
+      notes/.gitkeep|notes/README.md|notes/MAP.md|notes/INDEX.md)
+        ;;
+      notes|notes/)
+        ;;
+      *)
+        extra="$extra$path"$'\n'
+        ;;
+    esac
+  done <<< "$tracked"
+  extra="$(printf '%s' "$extra" | sed '/^$/d')"
+  if [[ -n "$extra" ]]; then
+    bad "tracked notes are outside the allowlist"
+    printf '%s\n' "$extra"
+    echo "allowed:"
+    printf '%s\n' "$allowed"
   else
-    say "ok  no private paths tracked"
+    say "ok  tracked notes are only the allowlist"
   fi
 else
   say "ok  not a git repository; tracked-file check skipped"
